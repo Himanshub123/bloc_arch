@@ -1,5 +1,8 @@
-import 'package:block_arch/blco/counter_bloc.dart';
-import 'package:block_arch/blco/counter_event_bloc.dart';
+import 'package:block_arch/cubit/posts_cubit.dart';
+import 'package:block_arch/data/respository/post_repository.dart';
+import 'package:block_arch/data/services/api_client.dart';
+import 'package:block_arch/data/services/providers/post_providers.dart';
+import 'package:block_arch/presentation/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,16 +15,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CounterBloc(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
+      home: const MyHomePage(),
     );
   }
 }
@@ -31,37 +31,15 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final counterBloc = BlocProvider.of<CounterBloc>(context);
-
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Jome"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            BlocBuilder<CounterBloc, int>(
-              builder: (context, state) {
-                return Text(
-                  '$state',
-                  style: const TextStyle(
-                      fontSize: 40, fontWeight: FontWeight.bold),
-                );
-              },
-            ),
-          ],
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text("Posts"),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {counterBloc.add(IncrementEvent())},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
+        body: BlocProvider(
+          create: (context) => PostsCubit(
+              postRepository: PostRepository(PostProviders(ApiClient()))),
+          child: const PostPage(),
+        ));
   }
 }
